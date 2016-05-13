@@ -34,7 +34,7 @@ individuals.count = dim(diploid)[1] # diploid chromosomes
 
 ##### SIMULATE TESTING DATA #####
 
-test.size = 100  # change to increase test data size
+test.size = 300  # change to increase test data size
 no.mask.col = as.integer(runif(1, 1, snps.count)) # number of columns to mask
 no.mask.rows = as.integer(runif(1, 1, test.size)) # number of rows to mask
 
@@ -56,17 +56,29 @@ s.missing.data[mask.rows, mask.columns] = NA
 
 
 ##### BASELINE METHOD #####
+## Simple Random Imputation ## 
 
+simple.random.imp = function (data){
+  missing = is.na(data)
+  n.missing = sum(missing)
+  data.obs = data[!missing]
+  imputed = data
+  imputed[missing] = sample (data.obs, n.missing, replace=TRUE)
+  return (imputed)
+}
+
+i.imputed.data = simple.random.imp(i.missing.data)
+s.imputed.data = simple.random.imp(s.missing.data)
 
 # accuracy measure
-i.actual = i.missing.data[which(i.missing.data == -1)]
-s.actual = s.missing.data[which(s.missing.data == -1)]
-i.predicted = i.imputed.data[which(i.missing.data == -1)]
-s.predicted = s.imputed.data[which(s.missing.data == -1)]
+i.actual = test.data[which(is.na(i.missing.data) == TRUE)]
+s.actual = test.data[which(is.na(s.missing.data) == TRUE)]
+i.predicted = i.imputed.data[which(is.na(i.missing.data) == TRUE)]
+s.predicted = s.imputed.data[which(is.na(s.missing.data) == TRUE)]
 i.accuracy = length(which(i.actual == i.predicted))/length(i.actual)
 s.accuracy = length(which(s.actual == s.predicted))/length(s.actual)
 
-print("Baseline Illumina Method Accuracy = ", i.accuracy)
-print("Baseline Sequencing Method Accuracy = ", s.accuracy)
+cat("Baseline Illumina Method Accuracy = ", i.accuracy * 100, "\n")
+cat("Baseline Sequencing Method Accuracy = ", s.accuracy * 100, "\n")
 
 ##### IMPROVED METHOD #####
