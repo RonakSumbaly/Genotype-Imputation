@@ -1,0 +1,35 @@
+############################################################################
+# Project Title: Genotype Imputation
+# Done By: Ronak Sumbaly
+# Description: read 1000 genome data and project data
+############################################################################
+
+library(data.table)
+library(stringr)
+library(pdist)
+
+setwd("~/Documents/Imputation Project/")
+
+##### INITIALIZING DATA #####
+
+# read CM224 provided data
+imputation_train = t(fread("Data/imputation_training.txt", header = TRUE))
+imputation_test = t(fread("Data/imputation_test.txt", header = TRUE))
+
+# read in 1000 genome data
+haploid = t(fread("1000genomes/chr-22.geno.reduced.csv", header = FALSE, data.table = TRUE))
+individuals = fread("1000genomes/chr-22.ind", header = FALSE,  data.table = TRUE)
+snps = fread("1000genomes/chr-22.snp", header = FALSE, data.table = TRUE)
+
+individuals.count = dim(individuals)[1] # haploid chromosomes
+snps.count = dim(haploid)[2] # number of snps 
+
+# construct diploid data
+diploid = haploid[seq(1,individuals.count,2),] + haploid[seq(2,individuals.count,2),] # add consecutive haploid rows 
+
+# add row names and col names to diploid data
+rownames(diploid) = individuals$V1[seq(1,individuals.count,2)]
+colnames(diploid) = paste("snp", str_split_fixed(snps$V1, ":", 2)[c(1:snps.count),2],sep = "")
+
+# update individual count
+individuals.count = dim(diploid)[1] # diploid chromosomes
