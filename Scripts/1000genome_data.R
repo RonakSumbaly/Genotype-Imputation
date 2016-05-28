@@ -1,7 +1,7 @@
 ############################################################################
 # Project Title: Genotype Imputation
 # Done By: Ronak Sumbaly
-# Description: read 1000 genome data and project data
+# Description: read 1000 genome data 
 ############################################################################
 
 library(data.table)
@@ -11,10 +11,6 @@ library(pdist)
 setwd("~/Documents/Imputation Project/")
 
 ##### INITIALIZING DATA #####
-
-# read CM224 provided data
-imputation_train = t(fread("Data/imputation_training.txt", header = TRUE))
-imputation_test = t(fread("Data/imputation_test.txt", header = TRUE))
 
 # read in 1000 genome data
 haploid = t(fread("1000genomes/chr-22.geno.reduced.csv", header = FALSE, data.table = TRUE))
@@ -33,3 +29,8 @@ colnames(diploid) = paste("snp", str_split_fixed(snps$V1, ":", 2)[c(1:snps.count
 
 # update individual count
 individuals.count = dim(diploid)[1] # diploid chromosomes
+
+# share same variable name over both data
+imputation.train = data.frame(diploid)
+
+

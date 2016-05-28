@@ -19,8 +19,8 @@ i.imputed.sr.data = simple.random.imp(i.missing.data)
 s.imputed.sr.data = simple.random.imp(s.missing.data)
 
 print.details()
-cat("Baseline Simple Random Imputation Illumina Method Accuracy = ", accuracy(test.data[which(is.na(i.missing.data) == TRUE)], i.imputed.sr.data[which(is.na(i.missing.data) == TRUE)]) * 100, "\n")
-cat("Baseline Simple Random Imputation Sequencing Method Accuracy = ", accuracy(test.data[which(is.na(s.missing.data) == TRUE)], s.imputed.sr.data[which(is.na(s.missing.data) == TRUE)])  * 100, "\n")
+cat("Baseline Simple Random Imputation Illumina Method Accuracy = ", accuracy(test.data[is.na(i.missing.data)], i.imputed.sr.data[is.na(i.missing.data) == TRUE]) * 100, "\n")
+cat("Baseline Simple Random Imputation Sequencing Method Accuracy = ", accuracy(test.data[is.na(s.missing.data) == TRUE], s.imputed.sr.data[is.na(s.missing.data) == TRUE])  * 100, "\n")
 
 ## kNN Imputation ## 
 
@@ -29,7 +29,7 @@ cal.mode = function(x) {
   ux[which.max(tabulate(match(x, ux)))]
 }
 
-knn.imp = function (data, method, k = 5){
+knn.imp = function (data, method, k = 9){
   if (method == "i") {
     complete.data = data[, -random.col]
     complete.reference.data = reference.data[, -random.col]
@@ -59,6 +59,6 @@ i.imputed.knn.data = knn.imp(i.missing.data, "i")
 s.imputed.knn.data = knn.imp(s.missing.data, "s")
 
 print.details()
-cat("Baseline k-Nearest Neighbor Illumina Method Accuracy = ", accuracy(test.data[which(is.na(i.missing.data) == TRUE)], i.imputed.knn.data[which(is.na(i.missing.data) == TRUE)]) * 100, "\n")
-cat("Baseline Simple Random Imputation Sequencing Method Accuracy = ", accuracy(test.data[which(is.na(s.missing.data) == TRUE)], s.imputed.knn.data[which(is.na(s.missing.data) == TRUE)])  * 100, "\n")
+cat("Baseline k-Nearest Neighbor Illumina Method Accuracy = ", accuracy(test.data[is.na(i.missing.data)], i.imputed.knn.data[is.na(i.missing.data)]) * 100, "\n")
+cat("Baseline Simple Random Imputation Sequencing Method Accuracy = ", accuracy(test.data[is.na(s.missing.data)], s.imputed.knn.data[is.na(s.missing.data)])  * 100, "\n")
 

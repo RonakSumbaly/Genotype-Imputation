@@ -6,13 +6,13 @@
 
 ##### REDUCE DATA #####
 
-snp.consider = 1000 # number to SNPs to consider
-reference.data = diploid[,1:snp.consider]  # consider 1:n SNPs only for time being
+snp.consider = round(snps.count) # number to SNPs to consider
+reference.data = subset(imputation.train, select=colnames(imputation.train)[1:snp.consider])  # consider 1:n SNPs only for time being
 ref.snps.count = snp.consider
 
 ##### SIMULATE TESTING DATA #####
 
-test.size = 1000  # change to increase test data size
+test.size = round(individuals.count / 2)  # change to increase test data size
 no.mask.col = as.integer(runif(1, 1, ref.snps.count)) # number of columns to mask
 no.mask.rows = as.integer(runif(1, 1, test.size)) # number of rows to mask
 
@@ -27,7 +27,9 @@ i.missing.data[,random.col] = NA
 
 # Sequencing method
 # random values in the matrix masked 
-mask.rows = sample(1:test.size, no.mask.rows, replace = TRUE)
-mask.columns = sample(1:ref.snps.count, no.mask.col, replace = TRUE)
+mask.rows = unique(sample(1:test.size, no.mask.rows, replace = TRUE))
+mask.columns = unique(sample(1:ref.snps.count, no.mask.col, replace = TRUE))
+
 s.missing.data = test.data
 s.missing.data[mask.rows, mask.columns] = NA
+
