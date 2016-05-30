@@ -1,7 +1,7 @@
 ############################################################################
 # Project Title: Genotype Imputation
 # Done By: Ronak Sumbaly
-# Description: improved method (SVD & PCA & SVT imputation)
+# Description: improved method (SVD & PCA imputation)
 ############################################################################
 
 ## SVD Imputation ##
@@ -11,7 +11,7 @@ rank.approx = function(x, k) {
   x.svd$u %*% diag(x.svd$d[1:k],nrow=k,ncol=k) %*% t(x.svd$v)
 }
 
-svd.imp = function(x, k = 5, num.iters = 10) {
+svd.imp = function(x, k = 13, num.iters = 25) {
   data.details = impute.details(x)
   
   if (data.details$missing.count == 0) return (x)
@@ -49,15 +49,21 @@ svd.imp = function(x, k = 5, num.iters = 10) {
   return(x)
 }
 
-# combine the reference and test dataset to perform SVD
-i.combined.data = rbind(reference.data, i.missing.data)
-s.combined.data = rbind(reference.data, s.missing.data)
-
-# perform SVD and get only the test data back 
-i.imputed.svd.data = round(svd.imp(i.combined.data)[dim(reference.data)[1]:(dim(reference.data)[1] + test.size - 1),])
-s.imputed.svd.data = round(svd.imp(s.combined.data)[dim(reference.data)[1]:(dim(reference.data)[1] + test.size - 1),])
+s.imputed.svd.data = round(svd.imp(s.missing.data))
+s.imputed.svd.data = simple.random.imp(s.imputed.svd.data) # incase of missing values
 
 print.details()
-cat("SVD k-Nearest Neighbor Illumina Method Accuracy = ", accuracy(test.data[is.na(i.missing.data)], i.imputed.svd.data[is.na(i.missing.data)]) * 100, "\n")
-cat("SVD Simple Random Imputation Sequencing Method Accuracy = ", accuracy(test.data[is.na(s.missing.data)], s.imputed.svd.data[is.na(s.missing.data)])  * 100, "\n")
+cat("SVD Imputation Accuracy = ", accuracy(test.data[is.na(s.missing.data)], s.imputed.svd.data[is.na(s.missing.data)])  * 100, "\n")
 
+## Ensemble Method ## 
+final.output = s.missing.data
+
+for (i in 1:test.size){
+  svd.i = unlist(s.imputed.svd.data[i,])
+  knn.i = unlist(s.imputed.knn.data[i,])
+  sr.i = unlist(s.imputed.sr.data[i,])
+  ensemble_output = rbind(svd.i, knn.i, sr.i)
+  final.output[i,] = apply(ensemble_output, 2, cal.mode)
+}
+
+cat("Ensemble Imputation Accuracy = ", accuracy(test.data[is.na(s.missing.data)], final.output[is.na(s.missing.data)])  * 100, "\n")

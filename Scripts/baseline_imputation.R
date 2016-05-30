@@ -15,12 +15,10 @@ simple.random.imp = function (data){
   return (imputed)
 }
 
-i.imputed.sr.data = simple.random.imp(i.missing.data)
 s.imputed.sr.data = simple.random.imp(s.missing.data)
 
 print.details()
-cat("Baseline Simple Random Imputation Illumina Method Accuracy = ", accuracy(test.data[is.na(i.missing.data)], i.imputed.sr.data[is.na(i.missing.data) == TRUE]) * 100, "\n")
-cat("Baseline Simple Random Imputation Sequencing Method Accuracy = ", accuracy(test.data[is.na(s.missing.data) == TRUE], s.imputed.sr.data[is.na(s.missing.data) == TRUE])  * 100, "\n")
+cat("Baseline Simple Random Imputation Accuracy = ", accuracy(test.data[is.na(s.missing.data) == TRUE], s.imputed.sr.data[is.na(s.missing.data) == TRUE])  * 100, "\n")
 
 ## kNN Imputation ## 
 
@@ -29,36 +27,36 @@ cal.mode = function(x) {
   ux[which.max(tabulate(match(x, ux)))]
 }
 
-knn.imp = function (data, method, k = 9){
-  if (method == "i") {
-    complete.data = data[, -random.col]
-    complete.reference.data = reference.data[, -random.col]
-    k.distance = matrix(pdist(complete.data, complete.reference.data)@dist, nrow = test.size)
-    knn.data = t(apply(k.distance, 1, order)[1:k,])
-    for (i in 1:test.size) {
-      closet.reference = apply(reference.data[knn.data[i,],], 2, cal.mode)
-      data[i, random.col] = closet.reference[random.col]
-    }
-  }
-  else {
+knn.imp = function (data, k = 17){
     for (j in 1:test.size) {
       j.data = data[j, ]
-      complete.data = j.data[which(is.na(j.data) == FALSE)]
+      complete.data = j.data[!is.na(j.data)]
       if (length(complete.data) == snp.consider) next
-      complete.reference.data = reference.data[, which(is.na(j.data) == FALSE)]
-      k.distance = matrix(pdist(complete.data, complete.reference.data)@dist, nrow = 1)
+      reference.data = data[,!is.na(j.data)]
+      
+      if (length(which(is.na(reference.data))) > 0) warning("reference data has NA values") 
+      
+      k.distance = matrix(pdist(complete.data, reference.data)@dist, nrow = 1)
       knn.data = t(apply(k.distance, 1, order)[1:k,])
-      closet.reference = apply(reference.data[knn.data,], 2, cal.mode)
-      data[j, which(is.na(j.data) == TRUE)] = closet.reference[which(is.na(j.data) == TRUE)]
+      knn.data = knn.data[!(knn.data == j)]
+      check.data = data[knn.data,is.na(j.data)]
+      
+      ref.chk.data = c()
+      for (x in 1:dim(check.data)[1]) {
+        if (length(which(is.na(check.data[x,]))) != 0) ref.chk.data = c(ref.chk.data, FALSE)
+        else ref.chk.data = c(ref.chk.data, TRUE)
+      }
+      
+      check.data = check.data[ref.chk.data, ]
+      closet.reference = apply(check.data, 2, cal.mode)
+      data[j, is.na(j.data)] = closet.reference
     }
-  }
   return(data)
 }
 
-i.imputed.knn.data = knn.imp(i.missing.data, "i")
-s.imputed.knn.data = knn.imp(s.missing.data, "s")
+s.imputed.knn.data = knn.imp(s.missing.data)
+s.imputed.knn.data = simple.random.imp(s.imputed.knn.data) # incase of missing values
 
 print.details()
-cat("Baseline k-Nearest Neighbor Illumina Method Accuracy = ", accuracy(test.data[is.na(i.missing.data)], i.imputed.knn.data[is.na(i.missing.data)]) * 100, "\n")
-cat("Baseline Simple Random Imputation Sequencing Method Accuracy = ", accuracy(test.data[is.na(s.missing.data)], s.imputed.knn.data[is.na(s.missing.data)])  * 100, "\n")
+cat("Baseline kNN Imputation Accuracy = ", accuracy(test.data[is.na(s.missing.data)], s.imputed.knn.data[is.na(s.missing.data)])  * 100, "\n")
 

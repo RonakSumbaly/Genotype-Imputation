@@ -14,12 +14,9 @@ setwd("~/Documents/Imputation Project/")
 ##### INITIALIZING DATA #####
 
 # read CM224 provided data 
-main.imputation.train = t(fread("Data/imputation_training.txt", header = TRUE))
-main.imputation.test = t(fread("Data/imputation_test.txt", header = TRUE)) ## submit this file's output
-
-imputation.train = data.frame(fread("Data/lmm_data.txt", header = TRUE))  ## used for training and testing 
-imputation.train$Phenotype = NULL ## remove phenotype
-imputation.train$V1 = NULL
+main.imputation.train = data.frame(t(fread("Data/imputation_training.txt", header = TRUE)))
+main.imputation.test = data.frame(t(fread("Data/imputation_test.txt", header = TRUE))) ## submit this file's output
+imputation.train = main.imputation.train
 
 # individual count
 individuals.count = dim(imputation.train)[1] 

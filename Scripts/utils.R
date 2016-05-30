@@ -14,8 +14,8 @@ accuracy = function(actual, predicted){
 print.details = function() {
   cat("Number of Individuals = ", test.size, "\n")
   cat("Number of SNPs Considered = ", snp.consider, "\n")
-  cat("Number of Illumina SNPs Masked = ", length(which(is.na(i.missing.data) == TRUE)), "\n")
-  cat("Number of Sequencing SNPs Masked = ", length(which(is.na(s.missing.data) == TRUE)), "\n")
+  cat("Number of Genotype Data = ", test.size * snp.consider, "\n")
+  cat("Number of SNPs Masked = ", length(which(is.na(s.missing.data) == TRUE)), "\n")
 }
 
 # get details about the data - missing value locations
