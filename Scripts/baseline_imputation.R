@@ -27,11 +27,11 @@ cal.mode = function(x) {
   ux[which.max(tabulate(match(x, ux)))]
 }
 
-knn.imp = function (data, k = 17){
-    for (j in 1:test.size) {
+knn.imp = function (data, k = 15){
+    for (j in 1:dim(data)[1]) {
       j.data = data[j, ]
       complete.data = j.data[!is.na(j.data)]
-      if (length(complete.data) == snp.consider) next
+      if (length(complete.data) == dim(data)[2]) next
       reference.data = data[,!is.na(j.data)]
       
       if (length(which(is.na(reference.data))) > 0) warning("reference data has NA values") 

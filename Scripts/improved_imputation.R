@@ -11,7 +11,7 @@ rank.approx = function(x, k) {
   x.svd$u %*% diag(x.svd$d[1:k],nrow=k,ncol=k) %*% t(x.svd$v)
 }
 
-svd.imp = function(x, k = 13, num.iters = 25) {
+svd.imp = function(x, k = 19, num.iters = 100) {
   data.details = impute.details(x)
   
   if (data.details$missing.count == 0) return (x)
