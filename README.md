@@ -1,5 +1,5 @@
 # Genotype-Imputation
-Statistical inference of Unobserved genotypes - CM224 Computational Genetics Project
+Statistical Inference of Unobserved Genotypes - CM224 Computational Genetics Project
 
 ##Background
 
