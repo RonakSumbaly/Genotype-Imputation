@@ -1,29 +1,23 @@
 ############################################################################
 # Project Title: Genotype Imputation
 # Done By: Ronak Sumbaly
-# Description: simulate testing data by adding random missing values
+# Description: simulate testing data by adding random missing values (1000 genome project)
 ############################################################################
 
 ##### REDUCE DATA #####
 
-snp.consider = round(snps.count) # number to SNPs to consider
-reference.data = subset(imputation.train, select=colnames(imputation.train)[1:snp.consider])  # consider 1:n SNPs only for time being
-ref.snps.count = snp.consider
+snp.consider = round(num.snps) # number to SNPs to consider
+snp.consider = 100000
+columns = sample(1:ncol(genome.1000), snp.consider, replace = TRUE)
+imputation.train = genome.1000[,columns]
+imputation.train.out = imputation.train
 
-##### SIMULATE TESTING DATA #####
+mask.snps = 0.40 * (num.individuals * snp.consider) # number of SNPs to mask
 
-test.size = round(individuals.count)  # change to increase test data size
-no.mask.col = as.integer(runif(1, 1, ref.snps.count)) # number of columns to mask
-no.mask.rows = as.integer(runif(1, 1, test.size)) # number of rows to mask
+snp.rows = sample(1:nrow(imputation.train), mask.snps, replace = TRUE)
+snp.columns = sample(1:ncol(imputation.train), mask.snps, replace = TRUE)
 
-test.data = reference.data[sample(nrow(reference.data), test.size),]  # get random size diploid test data 
-random.col = unique(sample(1:ref.snps.count, no.mask.col))  # mask random columns in test data 
-
-# Sequencing method
-# random values in the matrix masked 
-mask.rows = unique(sample(1:test.size, no.mask.rows, replace = TRUE))
-mask.columns = unique(sample(1:ref.snps.count, no.mask.col, replace = TRUE))
-
-s.missing.data = test.data
-s.missing.data[mask.rows, mask.columns] = NA
-
+imputation.train[unique(cbind(snp.rows,snp.columns))] = NA
+rm(columns)
+rm(snp.rows)
+rm(snp.columns)

@@ -7,8 +7,9 @@
 library(data.table)
 library(stringr)
 library(pdist)
+library(doParallel)
 
-setwd("~/Documents/Imputation Project/")
+setwd("~/Documents/Genotype Imputation/")
 
 ##### INITIALIZING DATA #####
 
@@ -17,20 +18,23 @@ haploid = t(fread("1000genomes/chr-22.geno.reduced.csv", header = FALSE, data.ta
 individuals = fread("1000genomes/chr-22.ind", header = FALSE,  data.table = TRUE)
 snps = fread("1000genomes/chr-22.snp", header = FALSE, data.table = TRUE)
 
-individuals.count = dim(individuals)[1] # haploid chromosomes
-snps.count = dim(haploid)[2] # number of snps 
+num.individuals = dim(individuals)[1] # haploid chromosomes
+num.snps = dim(haploid)[2] # number of snps 
 
 # construct diploid data
-diploid = haploid[seq(1,individuals.count,2),] + haploid[seq(2,individuals.count,2),] # add consecutive haploid rows 
+diploid = haploid[seq(1,num.individuals,2),] + haploid[seq(2,num.individuals,2),] # add consecutive haploid rows 
 
 # add row names and col names to diploid data
-rownames(diploid) = individuals$V1[seq(1,individuals.count,2)]
-colnames(diploid) = paste("snp", str_split_fixed(snps$V1, ":", 2)[c(1:snps.count),2],sep = "")
+rownames(diploid) = individuals$V1[seq(1,num.individuals,2)]
+colnames(diploid) = paste("snp", str_split_fixed(snps$V1, ":", 2)[c(1:num.snps),2],sep = "")
 
 # update individual count
-individuals.count = dim(diploid)[1] # diploid chromosomes
+num.individuals = dim(diploid)[1] # diploid chromosomes
 
 # share same variable name over both data
-imputation.train = data.frame(diploid)
+genome.1000 = data.frame(diploid)
 
-
+rm(diploid)
+rm(haploid)
+rm(individuals)
+rm(snps)

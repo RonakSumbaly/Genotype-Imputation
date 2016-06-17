@@ -12,11 +12,18 @@ accuracy = function(actual, predicted){
 
 # print details of data
 print.details = function() {
-  cat("Number of Individuals = ", test.size, "\n")
+  cat("Number of Individuals = ", num.individuals, "\n")
   cat("Number of SNPs Considered = ", snp.consider, "\n")
-  cat("Number of Genotype Data = ", test.size * snp.consider, "\n")
-  cat("Number of SNPs Masked = ", length(which(is.na(s.missing.data) == TRUE)), "\n")
+  cat("Number of Genotype Data = ", num.individuals * snp.consider, "\n")
+  cat("Number of SNPs Masked = ", length(which(is.na(imputation.train) == TRUE)), "\n")
 }
+
+# calculate mode 
+cal.mode = function(x) {
+  ux <- unique(x)
+  ux[which.max(tabulate(match(x, ux)))]
+}
+
 
 # get details about the data - missing value locations
 impute.details = function(x, byrow = F) {
