@@ -28,4 +28,7 @@ The improved method for this project is SVD imputation. SVD Imputation is a popu
 
 F1 score is a measure of precision and recall. We see an overall increase in F1 score for the improved method over the baseline method. F1 score drops as the number of SNP's to impute increases.
 
+##Concluding Remarks
+
+Imputation is not an easy process to do with high accuracy. Even though random imputation worked in certain scenarios like in the 1000 Genome simulation it clearly failed on the project data. Even though SVD does provide a solution it does require improvement in terms of accounting for high correlation between SNPs. Lastly since everything was written in R porting to Python would surely provide faster results.
 
